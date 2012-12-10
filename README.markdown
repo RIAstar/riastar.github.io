@@ -4,6 +4,7 @@ Here are some quick tips to get started with Octopress
 
 * Install the Ruby pre-req's [here](http://octopress.org/docs/setup/).
 * Run through the quick config options [here](http://octopress.org/docs/configuring/).
+* Install the default octo theme with `rake install`
 * Add a new [page or post](http://octopress.org/docs/blogging/).
 * run `rake generate` and `rake preview` to generate your site
 * load [http://localhost:4000/](http://localhost:4000/) to preview and if all looks good commit all changes & push.
