@@ -1,6 +1,18 @@
+## Get Started with Pagoda
+
+Here are some quick tips to get started with Octopress
+
+* Install the Ruby pre-req's [here](http://octopress.org/docs/setup/).
+* Run through the quick config options [here](http://octopress.org/docs/configuring/).
+* Add a new [page or post](http://octopress.org/docs/blogging/).
+* run `rake generate` and `rake preview` to generate your site
+* load [http://localhost:4000/](http://localhost:4000/) to preview and if all looks good commit all changes & push.
+* You're live! 
+
+
 ## What is Octopress?
 
-Octopress is [Jekyll](https://github.com/mojombo/jekyll) blogging at its finest.
+Octopress is [Jekyll](http://octopress.org/docs/setup/) blogging at its finest.
 
 1. **Octopress sports a clean responsive theme** written in semantic HTML5, focused on readability and friendliness toward mobile devices.
 2. **Code blogging is easy and beautiful.** Embed code (with [Solarized](http://ethanschoonover.com/solarized) styling) in your posts from gists, jsFiddle or from your filesystem.
