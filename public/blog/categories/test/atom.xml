@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: test | RIAstar Blog]]></title>
+  <link href="http://riastar.pagodabox.com//blog/categories/test/atom.xml" rel="self"/>
+  <link href="http://riastar.pagodabox.com//"/>
+  <updated>2013-03-09T01:13:17+01:00</updated>
+  <id>http://riastar.pagodabox.com//</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Hello world]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2013/03/09/hello-world/"/>
+    <updated>2013-03-09T00:31:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2013/03/09/hello-world</id>
+    <content type="html"><![CDATA[<h1>Hello cruel Ruby world</h1>
+
+<p>This would be my first post</p>
+]]></content>
+  </entry>
+  
+</feed>
