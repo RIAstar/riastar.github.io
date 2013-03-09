@@ -43,6 +43,12 @@ task :install, :theme do |t, args|
   mkdir_p public_dir
 end
 
+task :pt do
+    Rake::Task['install'].invoke 'riastar'
+    Rake::Task['generate'].invoke
+    Rake::Task['preview'].invoke
+end
+
 #######################
 # Working with Jekyll #
 #######################
@@ -299,7 +305,7 @@ task :setup_github_pages, :repo do |t, args|
   if args.repo
     repo_url = args.repo
   else
-    puts "Enter the read/write url for your repository" 
+    puts "Enter the read/write url for your repository"
     puts "(For example, 'git@github.com:your_username/your_username.github.com)"
     repo_url = get_stdin("Repository url: ")
   end
