@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: graphic design | RIAstar]]></title>
-  <link href="http://blog.riastar.net//blog/categories/graphic-design/atom.xml" rel="self"/>
-  <link href="http://blog.riastar.net//"/>
-  <updated>2013-03-10T23:55:41+01:00</updated>
-  <id>http://blog.riastar.net//</id>
+  <link href="http://blog.riastar.net/blog/categories/graphic-design/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net/"/>
+  <updated>2013-03-11T00:07:27+01:00</updated>
+  <id>http://blog.riastar.net/</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[RIAstar.children = [new Lena()];]]></title>
-    <link href="http://blog.riastar.net//2011/04/28/riastar-children-new-lena/"/>
+    <link href="http://blog.riastar.net/2011/04/28/riastar-children-new-lena/"/>
     <updated>2011-04-28T00:00:00+02:00</updated>
-    <id>http://blog.riastar.net//2011/04/28/riastar-children-new-lena</id>
+    <id>http://blog.riastar.net/2011/04/28/riastar-children-new-lena</id>
     <content type="html"><![CDATA[<p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
 beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
 So without further ado:</p>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: actionscript | RIAstar]]></title>
-  <link href="http://blog.riastar.net//blog/categories/actionscript/atom.xml" rel="self"/>
-  <link href="http://blog.riastar.net//"/>
-  <updated>2013-03-10T23:55:41+01:00</updated>
-  <id>http://blog.riastar.net//</id>
+  <link href="http://blog.riastar.net/blog/categories/actionscript/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net/"/>
+  <updated>2013-03-11T00:07:27+01:00</updated>
+  <id>http://blog.riastar.net/</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[GradleFx committer]]></title>
-    <link href="http://blog.riastar.net//2012/03/08/gradlefx-committer/"/>
+    <link href="http://blog.riastar.net/2012/03/08/gradlefx-committer/"/>
     <updated>2012-03-08T00:00:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/03/08/gradlefx-committer</id>
+    <id>http://blog.riastar.net/2012/03/08/gradlefx-committer</id>
     <content type="html"><![CDATA[<p>Today I've taken my first steps in the open-source world: I became a committer to the <a href="http://gradlefx.org/">GradleFx</a> project.</p>
 
 <h2>What project say you?</h2>
@@ -63,9 +63,9 @@ on contributing and before I knew what happened, I became part of the 'team'.</p
   
   <entry>
     <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
-    <link href="http://blog.riastar.net//2012/02/20/copying-instance-properties/"/>
+    <link href="http://blog.riastar.net/2012/02/20/copying-instance-properties/"/>
     <updated>2012-02-20T14:18:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/02/20/copying-instance-properties</id>
+    <id>http://blog.riastar.net/2012/02/20/copying-instance-properties</id>
     <content type="html"><![CDATA[<p>I've lost count on how many times I've needed this in RIA development with Flex or ActionScript: the possibility to
 quickly copy property values from one class instance to another. The two most important uses I can think of right now
 are these:</p>
@@ -132,9 +132,9 @@ ObjectUtil.copyProperties(editableItem, originalItem);
   
   <entry>
     <title type="html"><![CDATA[Gigs - Easier ActionScript event handling]]></title>
-    <link href="http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling/"/>
+    <link href="http://blog.riastar.net/2012/01/29/gigs-easier-actionscript-event-handling/"/>
     <updated>2012-01-29T13:07:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling</id>
+    <id>http://blog.riastar.net/2012/01/29/gigs-easier-actionscript-event-handling</id>
     <content type="html"><![CDATA[<p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
 breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
 <a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[RIAstar]]></title>
-  <link href="http://blog.riastar.net//atom.xml" rel="self"/>
-  <link href="http://blog.riastar.net//"/>
-  <updated>2013-03-10T23:55:41+01:00</updated>
-  <id>http://blog.riastar.net//</id>
+  <link href="http://blog.riastar.net/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net/"/>
+  <updated>2013-03-11T00:07:27+01:00</updated>
+  <id>http://blog.riastar.net/</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[GradleFx committer]]></title>
-    <link href="http://blog.riastar.net//2012/03/08/gradlefx-committer/"/>
+    <link href="http://blog.riastar.net/2012/03/08/gradlefx-committer/"/>
     <updated>2012-03-08T00:00:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/03/08/gradlefx-committer</id>
+    <id>http://blog.riastar.net/2012/03/08/gradlefx-committer</id>
     <content type="html"><![CDATA[<p>Today I&#8217;ve taken my first steps in the open-source world: I became a committer to the <a href="http://gradlefx.org/">GradleFx</a> project.</p>
 
 <h2>What project say you?</h2>
@@ -63,9 +63,9 @@ on contributing and before I knew what happened, I became part of the &#8216;tea
   
   <entry>
     <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
-    <link href="http://blog.riastar.net//2012/02/20/copying-instance-properties/"/>
+    <link href="http://blog.riastar.net/2012/02/20/copying-instance-properties/"/>
     <updated>2012-02-20T14:18:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/02/20/copying-instance-properties</id>
+    <id>http://blog.riastar.net/2012/02/20/copying-instance-properties</id>
     <content type="html"><![CDATA[<p>I&#8217;ve lost count on how many times I&#8217;ve needed this in RIA development with Flex or ActionScript: the possibility to
 quickly copy property values from one class instance to another. The two most important uses I can think of right now
 are these:</p>
@@ -162,9 +162,9 @@ we want to restore the values of the original instance, not replace it entirely.
   
   <entry>
     <title type="html"><![CDATA[Gigs - Easier ActionScript event handling]]></title>
-    <link href="http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling/"/>
+    <link href="http://blog.riastar.net/2012/01/29/gigs-easier-actionscript-event-handling/"/>
     <updated>2012-01-29T13:07:00+01:00</updated>
-    <id>http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling</id>
+    <id>http://blog.riastar.net/2012/01/29/gigs-easier-actionscript-event-handling</id>
     <content type="html"><![CDATA[<p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
 breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
 <a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came
@@ -273,9 +273,9 @@ that soon.</p>
   
   <entry>
     <title type="html"><![CDATA[CFInvoke with a custom endpoint - ColdFusion]]></title>
-    <link href="http://blog.riastar.net//2011/08/23/cfinvoke-custom-endpoint/"/>
+    <link href="http://blog.riastar.net/2011/08/23/cfinvoke-custom-endpoint/"/>
     <updated>2011-08-23T00:00:00+02:00</updated>
-    <id>http://blog.riastar.net//2011/08/23/cfinvoke-custom-endpoint</id>
+    <id>http://blog.riastar.net/2011/08/23/cfinvoke-custom-endpoint</id>
     <content type="html"><![CDATA[<p>Consuming web services in ColdFusion is easy - at least since CF9, because it used to be a PITA in previous versions
 for some kinds of services (e.g. SOAP).</p>
 
@@ -346,23 +346,23 @@ I found the following - completely undocumented - solution to use a custom endpo
   
   <entry>
     <title type="html"><![CDATA[RIAstar.children = [new Lena()];]]></title>
-    <link href="http://blog.riastar.net//2011/04/28/riastar-children-new-lena/"/>
+    <link href="http://blog.riastar.net/2011/04/28/riastar-children-new-lena/"/>
     <updated>2011-04-28T00:00:00+02:00</updated>
-    <id>http://blog.riastar.net//2011/04/28/riastar-children-new-lena</id>
+    <id>http://blog.riastar.net/2011/04/28/riastar-children-new-lena</id>
     <content type="html"><![CDATA[<p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
 beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
 So without further ado:</p>
 
-<p><img class="center" src="http://blog.riastar.net//images/posts/2011/lena-birthcard.jpg" title="Presentation Lena's birthcard" ></p>
+<p><img class="center" src="http://blog.riastar.net/images/posts/2011/lena-birthcard.jpg" title="Presentation Lena's birthcard" ></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[Pixelate filter with Pixel Bender]]></title>
-    <link href="http://blog.riastar.net//2009/03/15/pixelate-filter-with-pixel-bender/"/>
+    <link href="http://blog.riastar.net/2009/03/15/pixelate-filter-with-pixel-bender/"/>
     <updated>2009-03-15T00:00:00+01:00</updated>
-    <id>http://blog.riastar.net//2009/03/15/pixelate-filter-with-pixel-bender</id>
-    <content type="html"><![CDATA[<p><img class="left" src="http://blog.riastar.net//images/posts/2009/pixelate-filter.jpg" title="Pixelate filter" >
+    <id>http://blog.riastar.net/2009/03/15/pixelate-filter-with-pixel-bender</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://blog.riastar.net/images/posts/2009/pixelate-filter.jpg" title="Pixelate filter" >
 Well, I finally found some time to dive into the Pixel Bender pool and start playing around with that new technology
 that came from Adobe-land. And this is what I came up with for my very first attempt: nothing too fancy, just the Pixel
 Bender version of the well known ”Pixelate” PhotoShop filter. Give it a whirl by adjusting the pixel size with the
@@ -398,7 +398,7 @@ null
 </script>
 
 
-<p>You can <a href="http://blog.riastar.net//labs/pixel_bender/srcview/index.html">check the ActionScript source code</a> and here comes the Pixel Bender kernel source:</p>
+<p>You can <a href="http://blog.riastar.net/labs/pixel_bender/srcview/index.html">check the ActionScript source code</a> and here comes the Pixel Bender kernel source:</p>
 
 <figure class='code'><figcaption><span>Pixelate kernel</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
