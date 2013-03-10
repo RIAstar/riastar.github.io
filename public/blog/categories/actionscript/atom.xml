@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: actionscript | RIAstar Blog]]></title>
+  <link href="http://riastar.pagodabox.com//blog/categories/actionscript/atom.xml" rel="self"/>
+  <link href="http://riastar.pagodabox.com//"/>
+  <updated>2013-03-10T01:44:01+01:00</updated>
+  <id>http://riastar.pagodabox.com//</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties/"/>
+    <updated>2012-02-20T14:18:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties</id>
+    <content type="html"><![CDATA[<p>I've lost count on how many times I've needed this in RIA development with Flex or ActionScript: the possibility to
+quickly copy property values from one class instance to another. The two most important uses I can think of right now
+are these:</p>
+
+<ul>
+<li>You send a value object (VO) to the server. It comes back with a bunch of additional data. So far so good. But what
+you get back is another instance than the one you've just sent up the wire. Since the original instance may already be
+referenced somewhere in the application we do not want to simply replace it. We want the original instance filled with
+the new property values.</li>
+<li>You show the user a form with which he can edit a VO. After he's changed some values he can either commit his changes
+('OK' button) or discard them ('cancel' button). In this scenario you'll usually keep a copy of the original VO
+somewhere handy because you want to be able to restore it when needed. Now the story is the same as the previous one:
+we want to restore the values of the original instance, not replace it entirely.</li>
+</ul>
+
+
+<p>So I finally made this convenience method that uses <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/package.html#describeType%28%29%22">describeType()</a> for introspection as an addition to my
+<code>ObjectUtil</code> class:</p>
+
+<p>``` actionscript3
+public static function copyProperties(source:Object, target:Object):void {</p>
+
+<pre><code>if (!source || !target) return;
+
+//copy properties declared in Class definition
+var sourceInfo:XML = describeType(source);
+var propertyLists:Array = [sourceInfo.variable, sourceInfo.accessor];
+
+for each (var propertyList:XMLList in propertyLists) {
+    for each (var property:XML in propertyList) {
+        if (property.@access == undefined ||
+            property.@access == "readwrite")
+        {
+            var name:String = property.@name;
+            if (target.hasOwnProperty(name))
+                target[name] = source[name];
+        }
+    }
+}
+
+//copy dynamic properties
+for (name in source)
+    if (target.hasOwnProperty(name))
+        target[name] = source[name];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>I have needed this so many times I find it hard to fathom why something similar is not included in the
+<a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html">mx.utils.ObjectUtil class</a>. It marries perfectly with <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html#clone%28%29">ObjectUtils.clone()</a>.</p>
+
+<p>A simple example:
+```actionscript3
+var editableItem:MyClass = ObjectUtil.clone(originalItem);</p>
+
+<p>//the user edits editableItem
+//if he cancels we just discard this instance
+//if he commits his changes we copy the new values
+ObjectUtil.copyProperties(editableItem, originalItem);
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Gigs - Easier ActionScript event handling]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2012/01/29/gigs-easier-actionscript-event-handling/"/>
+    <updated>2012-01-29T13:07:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2012/01/29/gigs-easier-actionscript-event-handling</id>
+    <content type="html"><![CDATA[<p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
+breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
+<a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came
+to realise that I had made a few wrong decisions. Most importantly:</p>
+
+<ul>
+<li><em>overcomplicated nomenclature</em>: in a silly attempt at originality I used military metaphors throughout the library
+(Sentries, Captains, Spies, etc.). These names make the code actually less transparent to someone who doesn't know
+where they originated (i.e. anyone but me). This is in clear violation with my original intent: more readable code.</li>
+<li><em>too many optional arguments</em>: a lot of different configuration was passed through one method with a bunch of
+optional arguments. Again, this would not be transparent to someone who read such code for the first time.</li>
+<li><em>used inheritance (instead of composition)</em> to add the functionality to custom components</li>
+<li><em>string-based conditionals</em>: <code>"r:propertyA", "f:propertyB"</code> to pass 'propertyA' to the result handler and 'propertyB'
+to the failure handler? Not so pretty.</li>
+</ul>
+
+
+<p><strong>Enter Gigs</strong> (a.k.a RIAstar events)</p>
+
+<p>So I decided to rethink the whole thing. To start with, the library name will remain my only attempt at originality.
+But let's get down to the real stuff. This is how you use Gigs for tracking native Events:</p>
+
+<p>``` actionscript3
+follow(submitButton).by(MouseEvent.CLICK).handle(submit);</p>
+
+<p>private function submit():void {</p>
+
+<pre><code>//do some submitting
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You can also join a 'gigs.properties' file to the application in which you can associate default event types to specific
+classes. For instance 95% of the time on Buttons we listen for CLICK events. So we register a default for that:</p>
+
+<p><code>properties
+spark.components.supportClasses.ButtonBase = click
+</code></p>
+
+<p>And then we can write the following to do the same thing as before:
+<code>actionscript3
+follow(submitButton).handle(submit);
+//we can still explicitely listen for
+//another event than the registered default
+follow(submitButton).by(MouseEvent.MOUSE_DOWN).handle(startDrag);
+</code></p>
+
+<p><strong>Passing property values</strong></p>
+
+<p>The 'handle' method takes one additional ...rest argument to which you can pass all the event properties you want pass
+to the result handler. For example (I've registered the ListBase class with the IndexChangeEvent.CHANGE event type):</p>
+
+<p>``` actionscript3
+follow(itemList).handle(editItemAt, "newIndex");</p>
+
+<p>private function editItemAt(index:int):void {</p>
+
+<pre><code> //open item editor
+</code></pre>
+
+<p>}
+```</p>
+
+<p><strong>Unfollowing</strong> (a.k.a. removing event listeners)</p>
+
+<p>There are three ways to stop following Events.</p>
+
+<p>Very specifically:
+<code>actionscript3
+unfollow(submitButton).by(MouseEvent.CLICK).handle(submit);
+</code></p>
+
+<p>Somewhat specifically (this will remove all event handlers that react to a CLICK event):
+<code>actionscript3
+unfollow(submitButton).by(MouseEvent.CLICK).all();
+</code></p>
+
+<p>Loose cannon (removes all event listeners for all event types for the given IEventDispatcher):
+<code>actionscript3
+unfollow(submitButton).all();
+</code></p>
+
+<p><strong>To be continued</strong></p>
+
+<p>That's it for now. I have yet to recreate all functionality that existed in Protection, but I will hopefully get to
+that soon.</p>
+]]></content>
+  </entry>
+  
+</feed>

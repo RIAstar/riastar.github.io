@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: snippet | RIAstar Blog]]></title>
+  <link href="http://riastar.pagodabox.com//blog/categories/snippet/atom.xml" rel="self"/>
+  <link href="http://riastar.pagodabox.com//"/>
+  <updated>2013-03-10T01:44:01+01:00</updated>
+  <id>http://riastar.pagodabox.com//</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties/"/>
+    <updated>2012-02-20T14:18:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties</id>
+    <content type="html"><![CDATA[<p>I've lost count on how many times I've needed this in RIA development with Flex or ActionScript: the possibility to
+quickly copy property values from one class instance to another. The two most important uses I can think of right now
+are these:</p>
+
+<ul>
+<li>You send a value object (VO) to the server. It comes back with a bunch of additional data. So far so good. But what
+you get back is another instance than the one you've just sent up the wire. Since the original instance may already be
+referenced somewhere in the application we do not want to simply replace it. We want the original instance filled with
+the new property values.</li>
+<li>You show the user a form with which he can edit a VO. After he's changed some values he can either commit his changes
+('OK' button) or discard them ('cancel' button). In this scenario you'll usually keep a copy of the original VO
+somewhere handy because you want to be able to restore it when needed. Now the story is the same as the previous one:
+we want to restore the values of the original instance, not replace it entirely.</li>
+</ul>
+
+
+<p>So I finally made this convenience method that uses <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/package.html#describeType%28%29%22">describeType()</a> for introspection as an addition to my
+<code>ObjectUtil</code> class:</p>
+
+<p>``` actionscript3
+public static function copyProperties(source:Object, target:Object):void {</p>
+
+<pre><code>if (!source || !target) return;
+
+//copy properties declared in Class definition
+var sourceInfo:XML = describeType(source);
+var propertyLists:Array = [sourceInfo.variable, sourceInfo.accessor];
+
+for each (var propertyList:XMLList in propertyLists) {
+    for each (var property:XML in propertyList) {
+        if (property.@access == undefined ||
+            property.@access == "readwrite")
+        {
+            var name:String = property.@name;
+            if (target.hasOwnProperty(name))
+                target[name] = source[name];
+        }
+    }
+}
+
+//copy dynamic properties
+for (name in source)
+    if (target.hasOwnProperty(name))
+        target[name] = source[name];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>I have needed this so many times I find it hard to fathom why something similar is not included in the
+<a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html">mx.utils.ObjectUtil class</a>. It marries perfectly with <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html#clone%28%29">ObjectUtils.clone()</a>.</p>
+
+<p>A simple example:
+```actionscript3
+var editableItem:MyClass = ObjectUtil.clone(originalItem);</p>
+
+<p>//the user edits editableItem
+//if he cancels we just discard this instance
+//if he commits his changes we copy the new values
+ObjectUtil.copyProperties(editableItem, originalItem);
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CFInvoke with a custom endpoint - ColdFusion]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2011/08/23/cfinvoke-custom-endpoint/"/>
+    <updated>2011-08-23T00:00:00+02:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2011/08/23/cfinvoke-custom-endpoint</id>
+    <content type="html"><![CDATA[<p>Consuming web services in ColdFusion is easy - at least since CF9, because it used to be a PITA in previous versions
+for some kinds of services (e.g. SOAP).</p>
+
+<p>You can even write it in one line - woohoo! -, like this:</p>
+
+<p>``` xml Default cfinvoke usage
+&lt;cfinvoke webservice="http://www.riastar.net/service/?wsdl"</p>
+
+<pre><code>      method="remoteMethodName" someArgument="hello"
+      returnvariable="result" /&gt;
+</code></pre>
+
+<p>```</p>
+
+<p><a href="http://help.adobe.com/en_US/ColdFusion/9.0/CFMLRef/WSc3ff6d0ea77859461172e0811cbec22c24-7e0a.html">CFInvoke</a> assumes that the url of the service and its endpoint are the same. As usual with ColdFusion, this is all
+very nice and handy as long as your situation matches the default. But from the moment you have to customize a bit,
+you can start pulling out your hair. And the fact is that the real world has this tendency not to match the default
+situation.</p>
+
+<p>For example: if the service you want to access has an endpoint that differs from the service url, you’re out of luck.
+I found the following - completely undocumented - solution to use a custom endpoint:</p>
+
+<p>``` xml cfinvoke where endpoint != service url
+&lt;cfset service = createObject(</p>
+
+<pre><code>      "webservice",
+      "http://www.riastar.net/service/?wsdl"
+</code></pre>
+
+<p>) />
+&lt;cfset service._setProperty(</p>
+
+<pre><code>      "javax.xml.rpc.service.endpoint.address",
+      "http://www.riastar.net/service"
+</code></pre>
+
+<p>) />
+&lt;cfinvoke webservice="#service#"</p>
+
+<pre><code>      method="remoteMethodName" someArgument="hello"
+      returnvariable="result" /&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>Notice the underscore? That means you should probably not be using this.</p>
+
+<p>Anyway, while researching this I also figured out the cfscript syntax to do the same thing.</p>
+
+<p>``` javascript cfinvoke where endpoint != service url as cfscript
+service = createObject("webservice",</p>
+
+<pre><code>                   "http://www.riastar.net/service/?wsdl");
+</code></pre>
+
+<p>service._setProperty("javax.xml.rpc.service.endpoint.address",</p>
+
+<pre><code>                 "http://www.riastar.net/service");
+</code></pre>
+
+<p>result = service.remoteMethodName(someArgument="hello");
+```</p>
+
+<p>You can also find this snippet on <a href="https://gist.github.com/RIAstar/1164657">Gist</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

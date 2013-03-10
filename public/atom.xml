@@ -4,7 +4,7 @@
   <title><![CDATA[RIAstar Blog]]></title>
   <link href="http://riastar.pagodabox.com//atom.xml" rel="self"/>
   <link href="http://riastar.pagodabox.com//"/>
-  <updated>2013-03-09T13:50:25+01:00</updated>
+  <updated>2013-03-10T01:44:01+01:00</updated>
   <id>http://riastar.pagodabox.com//</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
@@ -14,13 +14,428 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Hello world]]></title>
-    <link href="http://riastar.pagodabox.com//blog/2013/03/09/hello-world/"/>
-    <updated>2013-03-09T00:31:00+01:00</updated>
-    <id>http://riastar.pagodabox.com//blog/2013/03/09/hello-world</id>
-    <content type="html"><![CDATA[<h1>Hello cruel Ruby world</h1>
+    <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties/"/>
+    <updated>2012-02-20T14:18:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve lost count on how many times I&#8217;ve needed this in RIA development with Flex or ActionScript: the possibility to
+quickly copy property values from one class instance to another. The two most important uses I can think of right now
+are these:</p>
 
-<p>This would be my first post</p>
+<ul>
+<li>You send a value object (VO) to the server. It comes back with a bunch of additional data. So far so good. But what
+you get back is another instance than the one you&#8217;ve just sent up the wire. Since the original instance may already be
+referenced somewhere in the application we do not want to simply replace it. We want the original instance filled with
+the new property values.</li>
+<li>You show the user a form with which he can edit a VO. After he&#8217;s changed some values he can either commit his changes
+(&#8216;OK&#8217; button) or discard them (&#8216;cancel&#8217; button). In this scenario you&#8217;ll usually keep a copy of the original VO
+somewhere handy because you want to be able to restore it when needed. Now the story is the same as the previous one:
+we want to restore the values of the original instance, not replace it entirely.</li>
+</ul>
+
+
+<p>So I finally made this convenience method that uses <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/package.html#describeType%28%29%22">describeType()</a> for introspection as an addition to my
+<code>ObjectUtil</code> class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">function </span><span class="nf">copyProperties</span><span class="o">(</span><span class="n">source</span><span class="o">:</span><span class="kt">Object</span><span class="o">,</span> <span class="n">target</span><span class="o">:</span><span class="kt">Object</span><span class="o">):</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">source</span> <span class="o">||</span> <span class="o">!</span><span class="n">target</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//copy properties declared in Class definition</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">sourceInfo</span><span class="p">:</span><span class="kt">XML</span> <span class="o">=</span> <span class="n">describeType</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">propertyLists</span><span class="p">:</span><span class="kt">Array</span> <span class="o">=</span> <span class="o">[</span><span class="n">sourceInfo</span><span class="o">.</span><span class="na">variable</span><span class="o">,</span> <span class="n">sourceInfo</span><span class="o">.</span><span class="na">accessor</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">propertyList</span><span class="p">:</span><span class="kt">XMLList</span> <span class="k">in</span> <span class="n">propertyLists</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">property</span><span class="p">:</span><span class="kt">XML</span> <span class="k">in</span> <span class="n">propertyList</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="kc">undefined</span> <span class="o">||</span>
+</span><span class='line'>                <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="s2">&quot;readwrite&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="n">name</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">name</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">hasOwnProperty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>                    <span class="n">target</span><span class="o">[</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">[</span><span class="n">name</span><span class="o">];</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//copy dynamic properties</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">name</span> <span class="k">in</span> <span class="n">source</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">hasOwnProperty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>            <span class="n">target</span><span class="o">[</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">[</span><span class="n">name</span><span class="o">];</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I have needed this so many times I find it hard to fathom why something similar is not included in the
+<a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html">mx.utils.ObjectUtil class</a>. It marries perfectly with <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html#clone%28%29">ObjectUtils.clone()</a>.</p>
+
+<p>A simple example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="kd">var</span> <span class="n">editableItem</span><span class="p">:</span><span class="kt">MyClass</span> <span class="o">=</span> <span class="n">ObjectUtil</span><span class="o">.</span><span class="na">clone</span><span class="o">(</span><span class="n">originalItem</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the user edits editableItem</span>
+</span><span class='line'><span class="c1">//if he cancels we just discard this instance</span>
+</span><span class='line'><span class="c1">//if he commits his changes we copy the new values</span>
+</span><span class='line'><span class="n">ObjectUtil</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="n">editableItem</span><span class="o">,</span> <span class="n">originalItem</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Gigs - Easier ActionScript event handling]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2012/01/29/gigs-easier-actionscript-event-handling/"/>
+    <updated>2012-01-29T13:07:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2012/01/29/gigs-easier-actionscript-event-handling</id>
+    <content type="html"><![CDATA[<p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
+breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
+<a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came
+to realise that I had made a few wrong decisions. Most importantly:</p>
+
+<ul>
+<li><em>overcomplicated nomenclature</em>: in a silly attempt at originality I used military metaphors throughout the library
+(Sentries, Captains, Spies, etc.). These names make the code actually less transparent to someone who doesn&#8217;t know
+where they originated (i.e. anyone but me). This is in clear violation with my original intent: more readable code.</li>
+<li><em>too many optional arguments</em>: a lot of different configuration was passed through one method with a bunch of
+optional arguments. Again, this would not be transparent to someone who read such code for the first time.</li>
+<li><em>used inheritance (instead of composition)</em> to add the functionality to custom components</li>
+<li><em>string-based conditionals</em>: <code>"r:propertyA", "f:propertyB"</code> to pass &#8216;propertyA&#8217; to the result handler and &#8216;propertyB&#8217;
+to the failure handler? Not so pretty.</li>
+</ul>
+
+
+<p><strong>Enter Gigs</strong> (a.k.a RIAstar events)</p>
+
+<p>So I decided to rethink the whole thing. To start with, the library name will remain my only attempt at originality.
+But let&#8217;s get down to the real stuff. This is how you use Gigs for tracking native Events:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">function </span><span class="nf">submit</span><span class="o">():</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//do some submitting</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also join a &#8216;gigs.properties&#8217; file to the application in which you can associate default event types to specific
+classes. For instance 95% of the time on Buttons we listen for CLICK events. So we register a default for that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='properties'><span class='line'><span class="na">spark.components.supportClasses.ButtonBase</span> <span class="o">=</span> <span class="s">click</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then we can write the following to do the same thing as before:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//we can still explicitely listen for</span>
+</span><span class='line'><span class="c1">//another event than the registered default</span>
+</span><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">MOUSE_DOWN</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">startDrag</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Passing property values</strong></p>
+
+<p>The &#8216;handle&#8217; method takes one additional &#8230;rest argument to which you can pass all the event properties you want pass
+to the result handler. For example (I&#8217;ve registered the ListBase class with the IndexChangeEvent.CHANGE event type):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">itemList</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">editItemAt</span><span class="o">,</span> <span class="s2">&quot;newIndex&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">function </span><span class="nf">editItemAt</span><span class="o">(</span><span class="n">index</span><span class="o">:</span><span class="kt">int</span><span class="o">):</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>     <span class="c1">//open item editor</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Unfollowing</strong> (a.k.a. removing event listeners)</p>
+
+<p>There are three ways to stop following Events.</p>
+
+<p>Very specifically:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Somewhat specifically (this will remove all event handlers that react to a CLICK event):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">all</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Loose cannon (removes all event listeners for all event types for the given IEventDispatcher):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">all</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>To be continued</strong></p>
+
+<p>That&#8217;s it for now. I have yet to recreate all functionality that existed in Protection, but I will hopefully get to
+that soon.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CFInvoke with a custom endpoint - ColdFusion]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2011/08/23/cfinvoke-custom-endpoint/"/>
+    <updated>2011-08-23T00:00:00+02:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2011/08/23/cfinvoke-custom-endpoint</id>
+    <content type="html"><![CDATA[<p>Consuming web services in ColdFusion is easy - at least since CF9, because it used to be a PITA in previous versions
+for some kinds of services (e.g. SOAP).</p>
+
+<p>You can even write it in one line - woohoo! -, like this:</p>
+
+<figure class='code'><figcaption><span>Default cfinvoke usage</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;cfinvoke</span> <span class="na">webservice=</span><span class="s">&quot;http://www.riastar.net/service/?wsdl&quot;</span>
+</span><span class='line'>          <span class="na">method=</span><span class="s">&quot;remoteMethodName&quot;</span> <span class="na">someArgument=</span><span class="s">&quot;hello&quot;</span>
+</span><span class='line'>          <span class="na">returnvariable=</span><span class="s">&quot;result&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://help.adobe.com/en_US/ColdFusion/9.0/CFMLRef/WSc3ff6d0ea77859461172e0811cbec22c24-7e0a.html">CFInvoke</a> assumes that the url of the service and its endpoint are the same. As usual with ColdFusion, this is all
+very nice and handy as long as your situation matches the default. But from the moment you have to customize a bit,
+you can start pulling out your hair. And the fact is that the real world has this tendency not to match the default
+situation.</p>
+
+<p>For example: if the service you want to access has an endpoint that differs from the service url, you’re out of luck.
+I found the following - completely undocumented - solution to use a custom endpoint:</p>
+
+<figure class='code'><figcaption><span>cfinvoke where endpoint != service url</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;cfset</span> <span class="na">service =</span> <span class="s">createObject(</span>
+</span><span class='line'>          <span class="err">&quot;webservice&quot;,</span>
+</span><span class='line'>          <span class="err">&quot;http://www.riastar.net/service/?wsdl&quot;</span>
+</span><span class='line'><span class="err">)</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;cfset</span> <span class="err">service._setProperty(</span>
+</span><span class='line'>          <span class="err">&quot;javax.xml.rpc.service.endpoint.address&quot;,</span>
+</span><span class='line'>          <span class="err">&quot;http://www.riastar.net/service&quot;</span>
+</span><span class='line'><span class="err">)</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;cfinvoke</span> <span class="na">webservice=</span><span class="s">&quot;#service#&quot;</span>
+</span><span class='line'>          <span class="na">method=</span><span class="s">&quot;remoteMethodName&quot;</span> <span class="na">someArgument=</span><span class="s">&quot;hello&quot;</span>
+</span><span class='line'>          <span class="na">returnvariable=</span><span class="s">&quot;result&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice the underscore? That means you should probably not be using this.</p>
+
+<p>Anyway, while researching this I also figured out the cfscript syntax to do the same thing.</p>
+
+<figure class='code'><figcaption><span>cfinvoke where endpoint != service url as cfscript</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">service</span> <span class="o">=</span> <span class="nx">createObject</span><span class="p">(</span><span class="s2">&quot;webservice&quot;</span><span class="p">,</span>
+</span><span class='line'>                       <span class="s2">&quot;http://www.riastar.net/service/?wsdl&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">service</span><span class="p">.</span><span class="nx">_setProperty</span><span class="p">(</span><span class="s2">&quot;javax.xml.rpc.service.endpoint.address&quot;</span><span class="p">,</span>
+</span><span class='line'>                     <span class="s2">&quot;http://www.riastar.net/service&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">result</span> <span class="o">=</span> <span class="nx">service</span><span class="p">.</span><span class="nx">remoteMethodName</span><span class="p">(</span><span class="nx">someArgument</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also find this snippet on <a href="https://gist.github.com/RIAstar/1164657">Gist</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RIAstar.children = [new Lena()];]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2011/04/28/riastar-children-new-lena/"/>
+    <updated>2011-04-28T00:00:00+02:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2011/04/28/riastar-children-new-lena</id>
+    <content type="html"><![CDATA[<p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
+beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
+So without further ado:</p>
+
+<p><img class="center" src="http://riastar.pagodabox.com//images/posts/2011/lena-birthcard.jpg" title="Presentation Lena's birthcard" ></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Pixelate filter with Pixel Bender]]></title>
+    <link href="http://riastar.pagodabox.com//blog/2009/03/15/pixelate-filter-with-pixel-bender/"/>
+    <updated>2009-03-15T00:00:00+01:00</updated>
+    <id>http://riastar.pagodabox.com//blog/2009/03/15/pixelate-filter-with-pixel-bender</id>
+    <content type="html"><![CDATA[<p><img class="left" src="http://riastar.pagodabox.com//images/posts/2009/pixelate-filter.jpg" title="Pixelate filter" >
+Well, I finally found some time to dive into the Pixel Bender pool and start playing around with that new technology
+that came from Adobe-land. And this is what I came up with for my very first attempt: nothing too fancy, just the Pixel
+Bender version of the well known ”Pixelate” PhotoShop filter. Give it a whirl by adjusting the pixel size with the
+slider. Flash Player 10 required of course.</p>
+
+<hr />
+
+<p>Here&#8217;s a working example. Just play around with the <code>Pixel size</code> slider.</p>
+
+<div id="flashcontent-wrapper" class="center flash-video" style="width: 498px; height: 402px">
+<div id="flashcontent" style="width: 100%; height:100%"><p>Please install latest <a href='http://www.adobe.com/go/getflashplayer'>Flash Player Plugin</a>.</p></div>
+</div>
+
+
+<script type="text/javascript">
+//  &lt;![CDATA[
+var flashvars = {};
+var params = {};
+var attributes = {};
+swfobject.embedSWF(
+'/labs/pixel_bender/PixelBender.swf',
+'flashcontent',
+'100%',
+'100%',
+'10.0',
+null,
+flashvars,
+params,
+attributes,
+null
+);
+// ]]&gt;
+</script>
+
+
+<p>You can <a href="http://riastar.pagodabox.com//labs/pixel_bender/srcview/index.html">check the ActionScript source code</a> and here comes the Pixel Bender kernel source:</p>
+
+<figure class='code'><figcaption><span>Pixelate kernel</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;</span><span class="n">languageVersion</span> <span class="o">:</span> <span class="mf">1.0</span><span class="p">;</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">kernel</span> <span class="n">Pixelate</span>
+</span><span class='line'><span class="o">&lt;</span>
+</span><span class='line'>   <span class="n">namespace</span> <span class="o">:</span> <span class="s">&quot;net.riastar.shader&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">vendor</span> <span class="o">:</span> <span class="s">&quot;RIAstar&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">version</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">description</span> <span class="o">:</span> <span class="s">&quot;pixelates an image&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="o">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="n">input</span> <span class="n">image4</span> <span class="n">src</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">output</span> <span class="n">pixel4</span> <span class="n">dst</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">parameter</span> <span class="kt">float</span> <span class="n">size</span>
+</span><span class='line'>   <span class="o">&lt;</span>
+</span><span class='line'>      <span class="nl">minValue:</span> <span class="mf">1.0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nl">maxValue:</span> <span class="mf">20.0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nl">defaultValue:</span> <span class="mf">4.0</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="kt">void</span> <span class="nf">evaluatePixel</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">float2</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">outCoord</span><span class="p">();</span>
+</span><span class='line'>      <span class="kt">float</span> <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">dst</span> <span class="o">=</span> <span class="n">sampleNearest</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">float2</span><span class="p">(</span>
+</span><span class='line'>         <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">center</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">center</span>
+</span><span class='line'>      <span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//make sure not to sample outside the borders</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">dst</span><span class="p">.</span><span class="n">a</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span class='line'>         <span class="n">dst</span> <span class="o">=</span> <span class="n">sampleNearest</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">float2</span><span class="p">(</span>
+</span><span class='line'>            <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">));</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I had quite a hard time getting it to work in ActionScript, apparently because I installed the Flex 3.3 SDK just a week
+ago. Just putting a declaration of a <code>flash.display.Shader</code> class in my code, was sufficient to stop all code from
+executing, although the VM did not crash. I also got no error message whatsoever.</p>
+
+<p>So after a whole hour of trying everything I could think of, I told the compiler to use the old 3.2 SDK and tadaa:
+working like a charm. Is it a bug in 3.3 (which was meant to be a bugfix release in the first place) or did I do
+something wrong?</p>
 ]]></content>
   </entry>
   
