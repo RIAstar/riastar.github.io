@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: introspection | RIAstar Blog]]></title>
+  <title><![CDATA[Category: introspection | RIAstar]]></title>
   <link href="http://riastar.pagodabox.com//blog/categories/introspection/atom.xml" rel="self"/>
   <link href="http://riastar.pagodabox.com//"/>
-  <updated>2013-03-10T01:44:01+01:00</updated>
+  <updated>2013-03-10T22:29:42+01:00</updated>
   <id>http://riastar.pagodabox.com//</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[RIA utilities: copying instance properties]]></title>
-    <link href="http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties/"/>
+    <link href="http://riastar.pagodabox.com//2012/02/20/copying-instance-properties/"/>
     <updated>2012-02-20T14:18:00+01:00</updated>
-    <id>http://riastar.pagodabox.com//blog/2012/02/20/copying-instance-properties</id>
+    <id>http://riastar.pagodabox.com//2012/02/20/copying-instance-properties</id>
     <content type="html"><![CDATA[<p>I've lost count on how many times I've needed this in RIA development with Flex or ActionScript: the possibility to
 quickly copy property values from one class instance to another. The two most important uses I can think of right now
 are these:</p>

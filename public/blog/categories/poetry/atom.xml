@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: poetry | RIAstar Blog]]></title>
+  <title><![CDATA[Category: poetry | RIAstar]]></title>
   <link href="http://riastar.pagodabox.com//blog/categories/poetry/atom.xml" rel="self"/>
   <link href="http://riastar.pagodabox.com//"/>
-  <updated>2013-03-10T01:44:01+01:00</updated>
+  <updated>2013-03-10T22:29:42+01:00</updated>
   <id>http://riastar.pagodabox.com//</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[RIAstar.children = [new Lena()];]]></title>
-    <link href="http://riastar.pagodabox.com//blog/2011/04/28/riastar-children-new-lena/"/>
+    <link href="http://riastar.pagodabox.com//2011/04/28/riastar-children-new-lena/"/>
     <updated>2011-04-28T00:00:00+02:00</updated>
-    <id>http://riastar.pagodabox.com//blog/2011/04/28/riastar-children-new-lena</id>
+    <id>http://riastar.pagodabox.com//2011/04/28/riastar-children-new-lena</id>
     <content type="html"><![CDATA[<p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
 beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
 So without further ado:</p>

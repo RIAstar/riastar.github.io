@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: experiment | RIAstar Blog]]></title>
+  <title><![CDATA[Category: experiment | RIAstar]]></title>
   <link href="http://riastar.pagodabox.com//blog/categories/experiment/atom.xml" rel="self"/>
   <link href="http://riastar.pagodabox.com//"/>
-  <updated>2013-03-10T01:44:01+01:00</updated>
+  <updated>2013-03-10T22:29:42+01:00</updated>
   <id>http://riastar.pagodabox.com//</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Pixelate filter with Pixel Bender]]></title>
-    <link href="http://riastar.pagodabox.com//blog/2009/03/15/pixelate-filter-with-pixel-bender/"/>
+    <link href="http://riastar.pagodabox.com//2009/03/15/pixelate-filter-with-pixel-bender/"/>
     <updated>2009-03-15T00:00:00+01:00</updated>
-    <id>http://riastar.pagodabox.com//blog/2009/03/15/pixelate-filter-with-pixel-bender</id>
+    <id>http://riastar.pagodabox.com//2009/03/15/pixelate-filter-with-pixel-bender</id>
     <content type="html"><![CDATA[<p><img class="left" src="/images/posts/2009/pixelate-filter.jpg" title="Pixelate filter" >
 Well, I finally found some time to dive into the Pixel Bender pool and start playing around with that new technology
 that came from Adobe-land. And this is what I came up with for my very first attempt: nothing too fancy, just the Pixel
