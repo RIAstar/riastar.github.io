@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: open source | RIAstar]]></title>
+  <link href="http://blog.riastar.net//blog/categories/open-source/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net//"/>
+  <updated>2013-03-10T23:55:41+01:00</updated>
+  <id>http://blog.riastar.net//</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[GradleFx committer]]></title>
+    <link href="http://blog.riastar.net//2012/03/08/gradlefx-committer/"/>
+    <updated>2012-03-08T00:00:00+01:00</updated>
+    <id>http://blog.riastar.net//2012/03/08/gradlefx-committer</id>
+    <content type="html"><![CDATA[<p>Today I've taken my first steps in the open-source world: I became a committer to the <a href="http://gradlefx.org/">GradleFx</a> project.</p>
+
+<h2>What project say you?</h2>
+
+<p><a href="http://gradlefx.org/">GradleFx</a> is an automated build tool for building Flex and ActionScript applications. It's a plugin for <a href="http://gradle.org/">Gradle</a>,
+which is an alternative to the ubiquitous <a href="http://maven.apache.org/">Maven</a>. Actually calling it an alternative would not be doing it justice:
+it's <a href="http://maven.apache.org/">Maven</a>, <a href="http://ant.apache.org/ivy/">Ivy</a> and <a href="http://ant.apache.org/">ANT</a> mixed up and put on <a href="http://groovy.codehaus.org/">steroids</a>.</p>
+
+<p>Until <a href="http://gradlefx.org/">GradleFx</a> came to the scene, us poor Flex developers only had <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a> (a <a href="http://maven.apache.org/">Maven</a> plugin with the
+same goal) at their disposal. And truth be said: it has some <em>very</em> annoying bugs. So when I discovered <a href="http://gradlefx.org/">GradleFx</a> I
+was delighted.</p>
+
+<p>When I first gave <a href="http://gradlefx.org/">GradleFx</a> a try, I got a few builds up and running in no time. Unfortunately, I soon found out
+that <a href="http://gradlefx.org/">GradleFx</a> - being a fairly young project - was missing a few pieces. But since <a href="http://gradle.org/">Gradle</a> was designed to
+be an easily extensible framework, I worked my way around those shortcomings with some custom tasks.</p>
+
+<h2>First steps</h2>
+
+<p>I soon discovered that <a href="http://gradlefx.org/">GradleFx</a>' codebase was fairly transparent (as opposed to <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a>'). So I forked the
+project on <a href="https://github.com/GradleFx/GradleFx">GitHub</a> and I started adding some minor features. <a href="https://github.com/SlevinBE">Yennick</a>, one of the founders and currently the
+only active committer, seemed to like my ideas. He merged them into the codebase rather quickly, encouraged me to keep
+on contributing and before I knew what happened, I became part of the 'team'.</p>
+
+<h2>Contributions</h2>
+
+<p>So far I've added only a few minor improvements:</p>
+
+<ul>
+<li>a <code>theme</code> dependency scope: well, it was missing</li>
+<li>localization conventions: use localized .properties files with zero configuration</li>
+<li>the <code>frameworkLinkage</code> convention: a possibility to determine how the Flex framework is linked into the application</li>
+</ul>
+
+
+<p>Coming up:</p>
+
+<ul>
+<li>a <code>flashbuilder</code> plugin that generates a FlashBuilder project with all the dependencies on its build path</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

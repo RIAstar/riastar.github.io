@@ -9,8 +9,7 @@
   <meta name="author" content="RIAstar">
 
   
-  <meta name="description" content="I&#8217;ve lost count on how many times I&#8217;ve needed this in RIA development with Flex or ActionScript: the possibility to
-quickly copy property &hellip;">
+  <meta name="description" content="Today I&#8217;ve taken my first steps in the open-source world: I became a committer to the GradleFx project. What project say you? GradleFx is an &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ quickly copy property &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://riastar.pagodabox.com//">
+  <link rel="canonical" href="http://blog.riastar.net//">
   <link href="/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -59,7 +58,7 @@ quickly copy property &hellip;">
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:riastar.pagodabox.com/" />
+    <input type="hidden" name="q" value="site:blog.riastar.net/" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -74,6 +73,81 @@ quickly copy property &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/03/08/gradlefx-committer/">GradleFx Committer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-08T00:00:00+01:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I&#8217;ve taken my first steps in the open-source world: I became a committer to the <a href="http://gradlefx.org/">GradleFx</a> project.</p>
+
+<h2>What project say you?</h2>
+
+<p><a href="http://gradlefx.org/">GradleFx</a> is an automated build tool for building Flex and ActionScript applications. It&#8217;s a plugin for <a href="http://gradle.org/">Gradle</a>,
+which is an alternative to the ubiquitous <a href="http://maven.apache.org/">Maven</a>. Actually calling it an alternative would not be doing it justice:
+it&#8217;s <a href="http://maven.apache.org/">Maven</a>, <a href="http://ant.apache.org/ivy/">Ivy</a> and <a href="http://ant.apache.org/">ANT</a> mixed up and put on <a href="http://groovy.codehaus.org/">steroids</a>.</p>
+
+<p>Until <a href="http://gradlefx.org/">GradleFx</a> came to the scene, us poor Flex developers only had <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a> (a <a href="http://maven.apache.org/">Maven</a> plugin with the
+same goal) at their disposal. And truth be said: it has some <em>very</em> annoying bugs. So when I discovered <a href="http://gradlefx.org/">GradleFx</a> I
+was delighted.</p>
+
+<p>When I first gave <a href="http://gradlefx.org/">GradleFx</a> a try, I got a few builds up and running in no time. Unfortunately, I soon found out
+that <a href="http://gradlefx.org/">GradleFx</a> - being a fairly young project - was missing a few pieces. But since <a href="http://gradle.org/">Gradle</a> was designed to
+be an easily extensible framework, I worked my way around those shortcomings with some custom tasks.</p>
+
+<h2>First steps</h2>
+
+<p>I soon discovered that <a href="http://gradlefx.org/">GradleFx</a>&#8217; codebase was fairly transparent (as opposed to <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a>&#8217;). So I forked the
+project on <a href="https://github.com/GradleFx/GradleFx">GitHub</a> and I started adding some minor features. <a href="https://github.com/SlevinBE">Yennick</a>, one of the founders and currently the
+only active committer, seemed to like my ideas. He merged them into the codebase rather quickly, encouraged me to keep
+on contributing and before I knew what happened, I became part of the &#8216;team&#8217;.</p>
+
+<h2>Contributions</h2>
+
+<p>So far I&#8217;ve added only a few minor improvements:</p>
+
+<ul>
+<li>a <code>theme</code> dependency scope: well, it was missing</li>
+<li>localization conventions: use localized .properties files with zero configuration</li>
+<li>the <code>frameworkLinkage</code> convention: a possibility to determine how the Flex framework is linked into the application</li>
+</ul>
+
+
+<p>Coming up:</p>
+
+<ul>
+<li>a <code>flashbuilder</code> plugin that generates a FlashBuilder project with all the dependencies on its build path</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -649,6 +723,10 @@ something wrong?</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/03/08/gradlefx-committer/">GradleFx committer</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/02/20/copying-instance-properties/">RIA utilities: copying instance properties</a>
       </li>
     
@@ -662,10 +740,6 @@ something wrong?</p>
     
       <li class="post">
         <a href="/2011/04/28/riastar-children-new-lena/">RIAstar.children = [new Lena()];</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2009/03/15/pixelate-filter-with-pixel-bender/">Pixelate filter with Pixel Bender</a>
       </li>
     
   </ul>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: library | RIAstar]]></title>
-  <link href="http://riastar.pagodabox.com//blog/categories/library/atom.xml" rel="self"/>
-  <link href="http://riastar.pagodabox.com//"/>
-  <updated>2013-03-10T22:29:42+01:00</updated>
-  <id>http://riastar.pagodabox.com//</id>
+  <link href="http://blog.riastar.net//blog/categories/library/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net//"/>
+  <updated>2013-03-10T23:55:41+01:00</updated>
+  <id>http://blog.riastar.net//</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Gigs - Easier ActionScript event handling]]></title>
-    <link href="http://riastar.pagodabox.com//2012/01/29/gigs-easier-actionscript-event-handling/"/>
+    <link href="http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling/"/>
     <updated>2012-01-29T13:07:00+01:00</updated>
-    <id>http://riastar.pagodabox.com//2012/01/29/gigs-easier-actionscript-event-handling</id>
+    <id>http://blog.riastar.net//2012/01/29/gigs-easier-actionscript-event-handling</id>
     <content type="html"><![CDATA[<p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
 breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
 <a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came
