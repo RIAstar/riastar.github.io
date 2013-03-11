@@ -29,6 +29,7 @@ quickly copy property &hellip;">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
 
   
   <script type="text/javascript">
@@ -141,8 +142,6 @@ we want to restore the values of the original instance, not replace it entirely.
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
 </pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">function </span><span class="nf">copyProperties</span><span class="o">(</span><span class="n">source</span><span class="o">:</span><span class="kt">Object</span><span class="o">,</span> <span class="n">target</span><span class="o">:</span><span class="kt">Object</span><span class="o">):</span><span class="kt">void</span> <span class="o">{</span>
 </span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">source</span> <span class="o">||</span> <span class="o">!</span><span class="n">target</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
 </span><span class='line'>
@@ -152,9 +151,7 @@ we want to restore the values of the original instance, not replace it entirely.
 </span><span class='line'>
 </span><span class='line'>    <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">propertyList</span><span class="p">:</span><span class="kt">XMLList</span> <span class="k">in</span> <span class="n">propertyLists</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>        <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">property</span><span class="p">:</span><span class="kt">XML</span> <span class="k">in</span> <span class="n">propertyList</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="kc">undefined</span> <span class="o">||</span>
-</span><span class='line'>                <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="s2">&quot;readwrite&quot;</span><span class="o">)</span>
-</span><span class='line'>            <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="kc">undefined</span> <span class="o">||</span> <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="s2">&quot;readwrite&quot;</span><span class="o">)</span> <span class="o">{</span>
 </span><span class='line'>                <span class="kd">var</span> <span class="n">name</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">name</span><span class="o">;</span>
 </span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">hasOwnProperty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
 </span><span class='line'>                    <span class="n">target</span><span class="o">[</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">[</span><span class="n">name</span><span class="o">];</span>

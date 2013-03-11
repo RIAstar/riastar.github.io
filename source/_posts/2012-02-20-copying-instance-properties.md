@@ -32,9 +32,7 @@ public static function copyProperties(source:Object, target:Object):void {
 
     for each (var propertyList:XMLList in propertyLists) {
         for each (var property:XML in propertyList) {
-            if (property.@access == undefined ||
-                property.@access == "readwrite")
-            {
+            if (property.@access == undefined || property.@access == "readwrite") {
                 var name:String = property.@name;
                 if (target.hasOwnProperty(name))
                     target[name] = source[name];
