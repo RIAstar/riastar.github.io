@@ -32,13 +32,13 @@ body {
   @extend .serif;
 }
 h1 {
-  font-size: 2.2em;
+  font-size: 2em;
   line-height: 1.2em;
 }
 
 @media only screen and (min-width: 992px) {
-  body { font-size: 1.15em; }
-  h1 { font-size: 2.6em; line-height: 1.2em; }
+  body { font-size: 1.1em; }
+  h1 { font-size: 2.4em; line-height: 1.2em; }
 }
 
 #{headings()}{
@@ -48,21 +48,21 @@ h1 {
   font-weight: bold;
 }
 h2, section h1 {
-  font-size: 1.5em;
-}
-h3, section h2, section section h1 {
   font-size: 1.3em;
 }
-h4, section h3, section section h2, section section section h1 {
-  font-size: 1em;
+h3, section h2, section section h1 {
+  font-size: 1.1em;
 }
-h5, section h4, section section h3 {
+h4, section h3, section section h2, section section section h1 {
   font-size: .9em;
 }
-h6, section h5, section section h4, section section section h3 {
+h5, section h4, section section h3 {
   font-size: .8em;
 }
-p, blockquote, ul, ol { margin-bottom: 1.5em; }
+h6, section h5, section section h4, section section section h3 {
+  font-size: .7em;
+}
+p, blockquote, ul, ol { margin-bottom: 1.3em; }
 
 ul { list-style-type: disc;
   ul { list-style-type: circle; margin-bottom: 0px;
@@ -78,7 +78,7 @@ strong { font-weight: bold; }
 
 em { font-style: italic; }
 
-sup, sub { font-size: 0.8em; position: relative;  display: inline-block; }
+sup, sub { font-size: 0.7em; position: relative;  display: inline-block; }
 sup { top: -.5em; }
 sub { bottom: -.5em; }
 
