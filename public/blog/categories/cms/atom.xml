@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: CMS | RIAstar]]></title>
+  <link href="http://blog.riastar.net/blog/categories/cms/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net/"/>
+  <updated>2013-03-12T01:43:44+01:00</updated>
+  <id>http://blog.riastar.net/</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Moving to Octopress and Pagodabox]]></title>
+    <link href="http://blog.riastar.net/2013/03/11/octopress-and-pagodabox/"/>
+    <updated>2013-03-11T19:00:00+01:00</updated>
+    <id>http://blog.riastar.net/2013/03/11/octopress-and-pagodabox</id>
+    <content type="html"><![CDATA[<p>It was bound to happen at some point: <strong>I got hacked</strong>. Don't know when, don't know why. I only know that someone broke
+into my server, replaced the index page with a nice picture of the Koran and some Engrish proze praising the love of
+God. My islamist visitor was kind enough to leave the rest of my content untouched - for all I know, that is.</p>
+
+<h2>Now how could this happen?</h2>
+
+<p>Well, since I can find the time to write on this blog - say - once a year, how often do you think I applied security
+updates to my WordPress blog?</p>
+
+<p>Right!</p>
+
+<p><img class="right" src="/images/posts/2013/octopress.png" title="OctoPress logo" ></p>
+
+<p>So, because a Wordpress engine was overkill for my requirements anyway, not to mention slooooooow, I went CMS hunting
+and found the perfect solution with <a href="http://octopress.org/">OctoPress</a>. This is a perfectly geeky CMS that generates static html pages.
+You write your posts in <a href="http://daringfireball.net/projects/markdown/">MarkDown</a> - oh yeah, pure text, no WYSIWYG involved; then you  execute the <code>generate</code>
+command on the command line; your site is generated and ready to deploy.</p>
+
+<p>Its main advantages over my previous situation:</p>
+
+<ul>
+<li>I love the geekyness of the whole concept</li>
+<li>It's blazing fast: no database queries, no script processing, no nothing</li>
+<li>It's way more secure: try injecting this, m*th*f*ck*r</li>
+<li>It generates perfect semantic markup</li>
+<li>So far it's been fairly easy to customize</li>
+</ul>
+
+
+<p>Main downside at this point:</p>
+
+<ul>
+<li>I had a pretty hard time getting it to run on my Windows box: it's written in Ruby which doesn't like Windows very
+much. And I had no luck at all installing it under <a href="http://www.cygwin.com/">Cygwin</a>, so for the time being I'm stuck in a DOS shell to
+issue my commands.</li>
+</ul>
+
+
+<h2>New server</h2>
+
+<p>By chance I came across <a href="https://pagodabox.com/">PagodaBox</a> just about the same day. It is to Php what <a href="http://www.heroku.com/">Heroku</a> is to Ruby: a scalable
+hosting service in the cloud. Fortunately they had a free offering that - though limited - allowed me to play
+around. And I really love it, mostly for its Git deployment interface.</p>
+
+<p>The result is that I ended up with a workflow to write a new post and deploy it to my <a href="https://pagodabox.com/">PagodaBox</a> instance, that
+goes like this:</p>
+
+<p><code>sh
+$ vim 2013-03-11-my-new-post.md
+$ rake generate
+$ git add .
+$ git commit -m 'created new blog post'
+$ git push
+</code></p>
+
+<p>Just lovely!</p>
+]]></content>
+  </entry>
+  
+</feed>
