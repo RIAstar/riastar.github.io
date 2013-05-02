@@ -32,7 +32,7 @@ data. So here's how I created a "clean" production output and a heavyweight deve
 
 Let's start by stubbing out our config file for two different environments.
 
-``` groovy
+``` groovy config.groovy
 environments {
     dev {
         //development specific stuff goes here
@@ -50,7 +50,7 @@ Good, that's how mrhaki described it. Now lets add some properties that we can u
 all the mock-related code and the resources (the data files) in a separate source tree (`src/mock/`), which allows me
 to easily add/remove that part when needed.
 
-``` groovy
+``` groovy config.groovy
 environments {
     dev {
         //I added the resources folder to the 'srcDirs' because the files had to be embedded
@@ -91,13 +91,13 @@ empty array. This is not strictly nesessary, but it will make the code in the bu
 
 So we've configured our two environments. Next I will show you how to modify the Gradle(Fx) build script to leverage it.
 As in mrhaki's post, this script reads the custom `env` property from the issued command and processes the config file
-accordingly. Hence you'll be able initiate the build of a specific build like so:
+accordingly. Hence you'll be able to initiate the build of a specific build like so:
 
 ``` bash
 $ gradle clean build -Penv=production
 ```
 
-``` groovy
+``` groovy build.gradle
 buildscript {
     repositories.mavenCentral()
     dependencies.classpath 'org.gradlefx:gradlefx:0.6.4'

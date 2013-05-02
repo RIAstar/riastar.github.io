@@ -4,7 +4,7 @@
   <title><![CDATA[Category: gradlefx | RIAstar]]></title>
   <link href="http://blog.riastar.net/blog/categories/gradlefx/atom.xml" rel="self"/>
   <link href="http://blog.riastar.net/"/>
-  <updated>2013-05-02T22:43:22+02:00</updated>
+  <updated>2013-05-03T00:23:19+02:00</updated>
   <id>http://blog.riastar.net/</id>
   <author>
     <name><![CDATA[RIAstar]]></name>
@@ -47,7 +47,7 @@ data. So here's how I created a "clean" production output and a heavyweight deve
 
 <p>Let's start by stubbing out our config file for two different environments.</p>
 
-<p>``` groovy
+<p>``` groovy config.groovy
 environments {</p>
 
 <pre><code>dev {
@@ -68,7 +68,7 @@ production {
 all the mock-related code and the resources (the data files) in a separate source tree (<code>src/mock/</code>), which allows me
 to easily add/remove that part when needed.</p>
 
-<p>``` groovy
+<p>``` groovy config.groovy
 environments {</p>
 
 <pre><code>dev {
@@ -112,13 +112,13 @@ empty array. This is not strictly nesessary, but it will make the code in the bu
 
 <p>So we've configured our two environments. Next I will show you how to modify the Gradle(Fx) build script to leverage it.
 As in mrhaki's post, this script reads the custom <code>env</code> property from the issued command and processes the config file
-accordingly. Hence you'll be able initiate the build of a specific build like so:</p>
+accordingly. Hence you'll be able to initiate the build of a specific build like so:</p>
 
 <p><code>bash
 $ gradle clean build -Penv=production
 </code></p>
 
-<p>``` groovy
+<p>``` groovy build.gradle
 buildscript {</p>
 
 <pre><code>repositories.mavenCentral()
