@@ -3,7 +3,7 @@ layout: post
 title: "Moving to Octopress and Pagodabox"
 date: 2013-03-11 19:00
 comments: true
-categories: [blog, CMS, hosting, security]
+categories: [blog, CMS, hosting, security, open source]
 ---
 
 It was bound to happen at some point: **I got hacked**. Don't know when, don't know why. I only know that someone broke
