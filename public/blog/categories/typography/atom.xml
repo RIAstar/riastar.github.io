@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: typography | RIAstar]]></title>
+  <link href="http://blog.riastar.net/blog/categories/typography/atom.xml" rel="self"/>
+  <link href="http://blog.riastar.net/"/>
+  <updated>2013-05-03T00:23:19+02:00</updated>
+  <id>http://blog.riastar.net/</id>
+  <author>
+    <name><![CDATA[RIAstar]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[RIAstar.children = [new Lena()];]]></title>
+    <link href="http://blog.riastar.net/2011/04/28/riastar-children-new-lena/"/>
+    <updated>2011-04-28T00:00:00+02:00</updated>
+    <id>http://blog.riastar.net/2011/04/28/riastar-children-new-lena</id>
+    <content type="html"><![CDATA[<p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
+beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
+So without further ado:</p>
+
+<p><img class="center" src="/images/posts/2011/lena-birthcard.jpg" title="Presentation Lena's birthcard" ></p>
+]]></content>
+  </entry>
+  
+</feed>

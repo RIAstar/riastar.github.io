@@ -1,1 +1,0 @@
-Stub site for project pages
