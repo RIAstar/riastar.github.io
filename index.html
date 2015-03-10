@@ -1,0 +1,1200 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>RIAstar</title>
+  <meta name="author" content="RIAstar">
+
+  
+  <meta name="description" content="There has been some discussion lately about how we might be able to allow for custom configurations in
+GradleFx. Such a custom configuration would &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.riastar.net/">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="RIAstar" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Gentium+Book+Basic:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,300italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8299770-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><a href="/">
+    <img src="/images/riastar-logo-262x250.png" width="262" height="250"/>
+</a>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.riastar.net" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/03/28/gradlefx-multiple-configurations/">GradleFx: Multiple Configurations</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-28T22:37:00+01:00" pubdate data-updated="true">Mar 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There has been <a href="https://github.com/GradleFx/GradleFx/issues/77">some discussion</a> lately about how we might be able to allow for <a href="https://github.com/GradleFx/GradleFx/issues/80">custom configurations</a> in
+<a href="http://gradlefx.org/">GradleFx</a>. Such a custom configuration would allow a user to:</p>
+
+<ul>
+<li>generate different outputs from a single code base</li>
+<li>use specific dependencies for each of these outputs</li>
+<li>hook up any other custom task to a particular configuration</li>
+</ul>
+
+
+<p>As these discussions illustrate it is not currently possible to do so. And though we are looking into some possible
+solutions, they may not be implemented soon. So here I am to save the day and provide you with a viable workaround,
+until we get the matter sorted out.</p>
+
+<h2>Use case</h2>
+
+<p>This solution is heavily based on mrhaki&#8217;s <a href="http://mrhaki.blogspot.be/2009/11/gradle-goodness-using-properties-for.html">excellent article</a>, but it is tailored specifically for the Flex
+developer that needs to generate multiple outputs for different environments from a single project. I created this when
+facing a real-world issue and the solution is being used in production right now, so it&#8217;s been tried and tested.</p>
+
+<p>The specific situation I was facing was that I needed mock services and embedded mock data, in such a way that the
+application could run in standalone mode (i.e. without a server) and give a realistic feel to the users testing the UI.
+Of course in the production build I did not want to include all the additional classes and certainly not the embedded
+data. So here&#8217;s how I created a &#8220;clean&#8221; production output and a heavyweight development output including the mocks.</p>
+
+<h2>A groovy configuration</h2>
+
+<p>Let&#8217;s start by stubbing out our config file for two different environments.</p>
+
+<figure class='code'><figcaption><span>config.groovy</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">environments</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">dev</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//development specific stuff goes here</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">production</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//production specific stuff goes here</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//all that is shared by both configurations simply stays in the build.gradle file</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Good, that&#8217;s how mrhaki described it. Now lets add some properties that we can use in a GradleFx build. Note that I put
+all the mock-related code and the resources (the data files) in a separate source tree (<code>src/mock/</code>), which allows me
+to easily add/remove that part when needed.</p>
+
+<figure class='code'><figcaption><span>config.groovy</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">environments</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">dev</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//I added the resources folder to the &#39;srcDirs&#39; because the files had to be embedded</span>
+</span><span class='line'>        <span class="n">srcDirs</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;src/mock/actionscript&#39;</span><span class="o">,</span> <span class="s1">&#39;src/mock/resources&#39;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//fx-mocks is a library that helps with simulating data from services</span>
+</span><span class='line'>        <span class="c1">//fx-users-dev is a special build of the fx-users lib that also includes mock services and data</span>
+</span><span class='line'>        <span class="n">dependencies</span><span class="o">.</span><span class="na">merged</span> <span class="o">=</span> <span class="o">[</span>
+</span><span class='line'>            <span class="s1">&#39;net.riastar.lib:fx-mocks:1.0-SNAPSHOT&#39;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s1">&#39;net.riastar.lib:fx-users-dev:1.0-SNAPSHOT&#39;</span>
+</span><span class='line'>        <span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//it&#39;s gonna run in standalone mode so we set a bigger default window size</span>
+</span><span class='line'>        <span class="c1">//mock services are injected, so they&#39;re never referenced explicitly;</span>
+</span><span class='line'>        <span class="c1">//that&#39;s why we have to add them through the &#39;includes&#39; option</span>
+</span><span class='line'>        <span class="n">additionalCompilerOptions</span> <span class="o">=</span> <span class="o">[</span>
+</span><span class='line'>            <span class="s2">&quot;-default-size=1024,600&quot;</span><span class="o">,</span>
+</span><span class='line'>            <span class="s2">&quot;-includes=&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s2">&quot;net.riastar.myapp.service.impl.UserMockService,&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s2">&quot;net.riastar.myapp.service.impl.MyValueObjectMockService&quot;</span>
+</span><span class='line'>        <span class="o">]</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">production</span> <span class="o">{</span>
+</span><span class='line'>        <span class="c1">//in production we don&#39;t use the mock classes and resources,</span>
+</span><span class='line'>        <span class="c1">//we don&#39;t use the mock library and we use the production build of the fx-users library.</span>
+</span><span class='line'>        <span class="n">srcDirs</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>        <span class="n">dependencies</span><span class="o">.</span><span class="na">merged</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;com.trasysgroup.lib:fx-users:1.0-SNAPSHOT&#39;</span><span class="o">]</span>
+</span><span class='line'>        <span class="n">additionalCompilerOptions</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that in <code>production</code> I mirrored every property that I declared in the <code>dev</code> block, if only to set its value to an
+empty array. This is not strictly nesessary, but it will make the code in the build file a lot more readable later on.</p>
+
+<h2>Use it in a build script</h2>
+
+<p>So we&#8217;ve configured our two environments. Next I will show you how to modify the Gradle(Fx) build script to leverage it.
+As in mrhaki&#8217;s post, this script reads the custom <code>env</code> property from the issued command and processes the config file
+accordingly. Hence you&#8217;ll be able to initiate the build of a specific build like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>gradle clean build -Penv<span class="o">=</span>production
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>build.gradle</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">buildscript</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">repositories</span><span class="o">.</span><span class="na">mavenCentral</span><span class="o">()</span>
+</span><span class='line'>    <span class="n">dependencies</span><span class="o">.</span><span class="na">classpath</span> <span class="s1">&#39;org.gradlefx:gradlefx:0.6.4&#39;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;gradlefx&#39;</span>
+</span><span class='line'><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;swf&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//&#39;development&#39; build by default if the &#39;env&#39; argument wasn&#39;t set</span>
+</span><span class='line'><span class="c1">//I&#39;m not gonna explain this code: read mrhaki&#39;s post</span>
+</span><span class='line'><span class="kt">def</span> <span class="n">environment</span> <span class="o">=</span> <span class="n">hasProperty</span><span class="o">(</span><span class="s1">&#39;env&#39;</span><span class="o">)</span> <span class="o">?</span> <span class="n">env</span> <span class="o">:</span> <span class="s1">&#39;development&#39;</span>
+</span><span class='line'><span class="n">ext</span><span class="o">.</span><span class="na">config</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ConfigSlurper</span><span class="o">(</span><span class="n">environment</span><span class="o">).</span><span class="na">parse</span><span class="o">(</span><span class="n">file</span><span class="o">(</span><span class="s1">&#39;config.groovy&#39;</span><span class="o">).</span><span class="na">toURL</span><span class="o">())</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//add our custom srcDirs to the default ones</span>
+</span><span class='line'><span class="n">srcDirs</span> <span class="o">+=</span> <span class="n">config</span><span class="o">.</span><span class="na">srcDirs</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//add our custom libraries; swiftsuspenders will be used both in production and development</span>
+</span><span class='line'>    <span class="n">merged</span> <span class="s1">&#39;org.swiftsuspenders:swiftsuspenders:2.0.0-rc1&#39;</span><span class="o">,</span>
+</span><span class='line'>           <span class="n">config</span><span class="o">.</span><span class="na">dependencies</span><span class="o">.</span><span class="na">merged</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">flexSDK</span> <span class="s1">&#39;org.apache:apache-flex-sdk:4.9.1&#39;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//add our custom compiler options</span>
+</span><span class='line'><span class="n">additionalCompilerOptions</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="na">additionalCompilerOptions</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>See why we declared empty arrays in the <code>production</code> block? It would&#8217;ve required some conditional logic if we hadn&#8217;t,
+leaving the result much less elegant and readable. Especially the <code>merged</code> dependency would&#8217;ve been butt-ugly; believe
+me, I tried.</p>
+
+<h2>Conclusion</h2>
+
+<p>Well that&#8217;s about it. It&#8217;s not extremely complicated and it&#8217;s fairly elegant. I know it&#8217;s not exactly the Gradle way,
+but it gets the job done without too many compromises. Hope this helps someone.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/03/11/octopress-and-pagodabox/">Moving to Octopress and Pagodabox</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-11T19:00:00+01:00" pubdate data-updated="true">Mar 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It was bound to happen at some point: <strong>I got hacked</strong>. Don&#8217;t know when, don&#8217;t know why. I only know that someone broke
+into my server, replaced the index page with a nice picture of the Koran and some Engrish proze praising the love of
+God. My islamist visitor was kind enough to leave the rest of my content untouched - for all I know, that is.</p>
+
+<h2>Now how could this happen?</h2>
+
+<p>Well, since I can find the time to write on this blog - say - once a year, how often do you think I applied security
+updates to my WordPress blog?</p>
+
+<p>Right!</p>
+
+<p><img class="right" src="/images/posts/2013/octopress.png" title="OctoPress logo" ></p>
+
+<p>So, because a Wordpress engine was overkill for my requirements anyway, not to mention slooooooow, I went CMS hunting
+and found the perfect solution with <a href="http://octopress.org/">OctoPress</a>. This is a perfectly geeky CMS that generates static html pages.
+You write your posts in <a href="http://daringfireball.net/projects/markdown/">MarkDown</a> - oh yeah, pure text, no WYSIWYG involved; then you  execute the <code>generate</code>
+command on the command line; your site is generated and ready to deploy.</p>
+
+<p>Its main advantages over my previous situation:</p>
+
+<ul>
+<li>I love the geekyness of the whole concept</li>
+<li>It&#8217;s blazing fast: no database queries, no script processing, no nothing</li>
+<li>It&#8217;s way more secure: try injecting this, m*th*f*ck*r</li>
+<li>It generates perfect semantic markup</li>
+<li>So far it&#8217;s been fairly easy to customize</li>
+</ul>
+
+
+<p>Main downside at this point:</p>
+
+<ul>
+<li>I had a pretty hard time getting it to run on my Windows box: it&#8217;s written in Ruby which doesn&#8217;t like Windows very
+much. And I had no luck at all installing it under <a href="http://www.cygwin.com/">Cygwin</a>, so for the time being I&#8217;m stuck in a DOS shell to
+issue my commands.</li>
+</ul>
+
+
+<h2>New server</h2>
+
+<p>By chance I came across <a href="https://pagodabox.com/">PagodaBox</a> just about the same day. It is to Php what <a href="http://www.heroku.com/">Heroku</a> is to Ruby: a scalable
+hosting service in the cloud. Fortunately they had a free offering that - though limited - allowed me to play
+around. And I really love it, mostly for its Git deployment interface.</p>
+
+<p>The result is that I ended up with a workflow to write a new post and deploy it to my <a href="https://pagodabox.com/">PagodaBox</a> instance, that
+goes like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>vim 2013-03-11-my-new-post.md
+</span><span class='line'><span class="nv">$ </span>rake generate
+</span><span class='line'><span class="nv">$ </span>git add .
+</span><span class='line'><span class="nv">$ </span>git commit -m <span class="s1">&#39;created new blog post&#39;</span>
+</span><span class='line'><span class="nv">$ </span>git push
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Just lovely!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/03/08/gradlefx-committer/">GradleFx Committer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-08T00:00:00+01:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I&#8217;ve taken my first steps in the open-source world: I became a committer to the <a href="http://gradlefx.org/">GradleFx</a> project.</p>
+
+<h2>What project say you?</h2>
+
+<p><a href="http://gradlefx.org/">GradleFx</a> is an automated build tool for building Flex and ActionScript applications. It&#8217;s a plugin for <a href="http://gradle.org/">Gradle</a>,
+which is an alternative to the ubiquitous <a href="http://maven.apache.org/">Maven</a>. Actually calling it an alternative would not be doing it justice:
+it&#8217;s <a href="http://maven.apache.org/">Maven</a>, <a href="http://ant.apache.org/ivy/">Ivy</a> and <a href="http://ant.apache.org/">ANT</a> mixed up and put on <a href="http://groovy.codehaus.org/">steroids</a>.</p>
+
+<p>Until <a href="http://gradlefx.org/">GradleFx</a> came to the scene, us poor Flex developers only had <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a> (a <a href="http://maven.apache.org/">Maven</a> plugin with the
+same goal) at their disposal. And truth be said: it has some <em>very</em> annoying bugs. So when I discovered <a href="http://gradlefx.org/">GradleFx</a> I
+was delighted.</p>
+
+<p>When I first gave <a href="http://gradlefx.org/">GradleFx</a> a try, I got a few builds up and running in no time. Unfortunately, I soon found out
+that <a href="http://gradlefx.org/">GradleFx</a> - being a fairly young project - was missing a few pieces. But since <a href="http://gradle.org/">Gradle</a> was designed to
+be an easily extensible framework, I worked my way around those shortcomings with some custom tasks.</p>
+
+<h2>First steps</h2>
+
+<p>I soon discovered that <a href="http://gradlefx.org/">GradleFx</a>&#8217; codebase was fairly transparent (as opposed to <a href="http://code.google.com/p/flex-mojos/">FlexMojos</a>&#8217;). So I forked the
+project on <a href="https://github.com/GradleFx/GradleFx">GitHub</a> and I started adding some minor features. <a href="https://github.com/SlevinBE">Yennick</a>, one of the founders and currently the
+only active committer, seemed to like my ideas. He merged them into the codebase rather quickly, encouraged me to keep
+on contributing and before I knew what happened, I became part of the &#8216;team&#8217;.</p>
+
+<h2>Contributions</h2>
+
+<p>So far I&#8217;ve added only a few minor improvements:</p>
+
+<ul>
+<li>a <code>theme</code> dependency scope: well, it was missing</li>
+<li>localization conventions: use localized .properties files with zero configuration</li>
+<li>the <code>frameworkLinkage</code> convention: a possibility to determine how the Flex framework is linked into the application</li>
+</ul>
+
+
+<p>Coming up:</p>
+
+<ul>
+<li>a <code>flashbuilder</code> plugin that generates a FlashBuilder project with all the dependencies on its build path</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/02/20/copying-instance-properties/">RIA Utilities: Copying Instance Properties</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-20T14:18:00+01:00" pubdate data-updated="true">Feb 20<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve lost count on how many times I&#8217;ve needed this in RIA development with Flex or ActionScript: the possibility to
+quickly copy property values from one class instance to another. The two most important uses I can think of right now
+are these:</p>
+
+<ul>
+<li>You send a value object (VO) to the server. It comes back with a bunch of additional data. So far so good. But what
+you get back is another instance than the one you&#8217;ve just sent up the wire. Since the original instance may already be
+referenced somewhere in the application we do not want to simply replace it. We want the original instance filled with
+the new property values.</li>
+<li>You show the user a form with which he can edit a VO. After he&#8217;s changed some values he can either commit his changes
+(&#8216;OK&#8217; button) or discard them (&#8216;cancel&#8217; button). In this scenario you&#8217;ll usually keep a copy of the original VO
+somewhere handy because you want to be able to restore it when needed. Now the story is the same as the previous one:
+we want to restore the values of the original instance, not replace it entirely.</li>
+</ul>
+
+
+<p>So I finally made this convenience method that uses <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/package.html#describeType%28%29%22">describeType()</a> for introspection as an addition to my
+<code>ObjectUtil</code> class:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kd">function </span><span class="nf">copyProperties</span><span class="o">(</span><span class="n">source</span><span class="o">:</span><span class="kt">Object</span><span class="o">,</span> <span class="n">target</span><span class="o">:</span><span class="kt">Object</span><span class="o">):</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(!</span><span class="n">source</span> <span class="o">||</span> <span class="o">!</span><span class="n">target</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//copy properties declared in Class definition</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">sourceInfo</span><span class="p">:</span><span class="kt">XML</span> <span class="o">=</span> <span class="n">describeType</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">propertyLists</span><span class="p">:</span><span class="kt">Array</span> <span class="o">=</span> <span class="o">[</span><span class="n">sourceInfo</span><span class="o">.</span><span class="na">variable</span><span class="o">,</span> <span class="n">sourceInfo</span><span class="o">.</span><span class="na">accessor</span><span class="o">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">propertyList</span><span class="p">:</span><span class="kt">XMLList</span> <span class="k">in</span> <span class="n">propertyLists</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">for</span> <span class="k">each</span> <span class="o">(</span><span class="kd">var</span> <span class="n">property</span><span class="p">:</span><span class="kt">XML</span> <span class="k">in</span> <span class="n">propertyList</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="kc">undefined</span> <span class="o">||</span> <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">access</span> <span class="o">==</span> <span class="s2">&quot;readwrite&quot;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>                <span class="kd">var</span> <span class="n">name</span><span class="p">:</span><span class="kt">String</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="err">@</span><span class="n">name</span><span class="o">;</span>
+</span><span class='line'>                <span class="k">if</span> <span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">hasOwnProperty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>                    <span class="n">target</span><span class="o">[</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">[</span><span class="n">name</span><span class="o">];</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//copy dynamic properties</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">name</span> <span class="k">in</span> <span class="n">source</span><span class="o">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">hasOwnProperty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span>
+</span><span class='line'>            <span class="n">target</span><span class="o">[</span><span class="n">name</span><span class="o">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">[</span><span class="n">name</span><span class="o">];</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I have needed this so many times I find it hard to fathom why something similar is not included in the
+<a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html">mx.utils.ObjectUtil class</a>. It marries perfectly with <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/utils/ObjectUtil.html#clone%28%29">ObjectUtils.clone()</a>.</p>
+
+<p>A simple example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="kd">var</span> <span class="n">editableItem</span><span class="p">:</span><span class="kt">MyClass</span> <span class="o">=</span> <span class="n">ObjectUtil</span><span class="o">.</span><span class="na">clone</span><span class="o">(</span><span class="n">originalItem</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the user edits editableItem</span>
+</span><span class='line'><span class="c1">//if he cancels we just discard this instance</span>
+</span><span class='line'><span class="c1">//if he commits his changes we copy the new values</span>
+</span><span class='line'><span class="n">ObjectUtil</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="n">editableItem</span><span class="o">,</span> <span class="n">originalItem</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/01/29/gigs-easier-actionscript-event-handling/">Gigs - Easier ActionScript Event Handling</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-29T13:07:00+01:00" pubdate data-updated="true">Jan 29<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Some time ago I created Protection. It was a library intended to help me write more readable ActionScript code without
+breaking out of the paradigms that were set out by Adobe. You can find a more thorough explanation and motivation in
+<a href="http://blog.riastar.net/development/protection-actionscript-guarding/">an article I wrote earlier this year</a>. I have been using it a lot now and as much as I like the basic idea, I came
+to realise that I had made a few wrong decisions. Most importantly:</p>
+
+<ul>
+<li><em>overcomplicated nomenclature</em>: in a silly attempt at originality I used military metaphors throughout the library
+(Sentries, Captains, Spies, etc.). These names make the code actually less transparent to someone who doesn&#8217;t know
+where they originated (i.e. anyone but me). This is in clear violation with my original intent: more readable code.</li>
+<li><em>too many optional arguments</em>: a lot of different configuration was passed through one method with a bunch of
+optional arguments. Again, this would not be transparent to someone who read such code for the first time.</li>
+<li><em>used inheritance (instead of composition)</em> to add the functionality to custom components</li>
+<li><em>string-based conditionals</em>: <code>"r:propertyA", "f:propertyB"</code> to pass &#8216;propertyA&#8217; to the result handler and &#8216;propertyB&#8217;
+to the failure handler? Not so pretty.</li>
+</ul>
+
+
+<p><strong>Enter Gigs</strong> (a.k.a RIAstar events)</p>
+
+<p>So I decided to rethink the whole thing. To start with, the library name will remain my only attempt at originality.
+But let&#8217;s get down to the real stuff. This is how you use Gigs for tracking native Events:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">function </span><span class="nf">submit</span><span class="o">():</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//do some submitting</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also join a &#8216;gigs.properties&#8217; file to the application in which you can associate default event types to specific
+classes. For instance 95% of the time on Buttons we listen for CLICK events. So we register a default for that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='properties'><span class='line'><span class="na">spark.components.supportClasses.ButtonBase</span> <span class="o">=</span> <span class="s">click</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then we can write the following to do the same thing as before:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span><span class='line'><span class="c1">//we can still explicitely listen for</span>
+</span><span class='line'><span class="c1">//another event than the registered default</span>
+</span><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">MOUSE_DOWN</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">startDrag</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Passing property values</strong></p>
+
+<p>The &#8216;handle&#8217; method takes one additional &#8230;rest argument to which you can pass all the event properties you want pass
+to the result handler. For example (I&#8217;ve registered the ListBase class with the IndexChangeEvent.CHANGE event type):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">follow</span><span class="o">(</span><span class="n">itemList</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">editItemAt</span><span class="o">,</span> <span class="s2">&quot;newIndex&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="kd">function </span><span class="nf">editItemAt</span><span class="o">(</span><span class="n">index</span><span class="o">:</span><span class="kt">int</span><span class="o">):</span><span class="kt">void</span> <span class="o">{</span>
+</span><span class='line'>     <span class="c1">//open item editor</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Unfollowing</strong> (a.k.a. removing event listeners)</p>
+
+<p>There are three ways to stop following Events.</p>
+
+<p>Very specifically:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">handle</span><span class="o">(</span><span class="n">submit</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Somewhat specifically (this will remove all event handlers that react to a CLICK event):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">by</span><span class="o">(</span><span class="n">MouseEvent</span><span class="o">.</span><span class="na">CLICK</span><span class="o">).</span><span class="n">all</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Loose cannon (removes all event listeners for all event types for the given IEventDispatcher):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='actionscript3'><span class='line'><span class="n">unfollow</span><span class="o">(</span><span class="n">submitButton</span><span class="o">).</span><span class="n">all</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>To be continued</strong></p>
+
+<p>That&#8217;s it for now. I have yet to recreate all functionality that existed in Protection, but I will hopefully get to
+that soon.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/08/23/cfinvoke-custom-endpoint/">CFInvoke With a Custom Endpoint - ColdFusion</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-23T00:00:00+02:00" pubdate data-updated="true">Aug 23<span>rd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Consuming web services in ColdFusion is easy - at least since CF9, because it used to be a PITA in previous versions
+for some kinds of services (e.g. SOAP).</p>
+
+<p>You can even write it in one line - woohoo! -, like this:</p>
+
+<figure class='code'><figcaption><span>Default cfinvoke usage</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;cfinvoke</span> <span class="na">webservice=</span><span class="s">&quot;http://www.riastar.net/service/?wsdl&quot;</span>
+</span><span class='line'>          <span class="na">method=</span><span class="s">&quot;remoteMethodName&quot;</span> <span class="na">someArgument=</span><span class="s">&quot;hello&quot;</span>
+</span><span class='line'>          <span class="na">returnvariable=</span><span class="s">&quot;result&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://help.adobe.com/en_US/ColdFusion/9.0/CFMLRef/WSc3ff6d0ea77859461172e0811cbec22c24-7e0a.html">CFInvoke</a> assumes that the url of the service and its endpoint are the same. As usual with ColdFusion, this is all
+very nice and handy as long as your situation matches the default. But from the moment you have to customize a bit,
+you can start pulling out your hair. And the fact is that the real world has this tendency not to match the default
+situation.</p>
+
+<p>For example: if the service you want to access has an endpoint that differs from the service url, you’re out of luck.
+I found the following - completely undocumented - solution to use a custom endpoint:</p>
+
+<figure class='code'><figcaption><span>cfinvoke where endpoint != service url</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;cfset</span> <span class="na">service =</span> <span class="s">createObject(</span>
+</span><span class='line'>          <span class="err">&quot;webservice&quot;,</span>
+</span><span class='line'>          <span class="err">&quot;http://www.riastar.net/service/?wsdl&quot;</span>
+</span><span class='line'><span class="err">)</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;cfset</span> <span class="err">service._setProperty(</span>
+</span><span class='line'>          <span class="err">&quot;javax.xml.rpc.service.endpoint.address&quot;,</span>
+</span><span class='line'>          <span class="err">&quot;http://www.riastar.net/service&quot;</span>
+</span><span class='line'><span class="err">)</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;cfinvoke</span> <span class="na">webservice=</span><span class="s">&quot;#service#&quot;</span>
+</span><span class='line'>          <span class="na">method=</span><span class="s">&quot;remoteMethodName&quot;</span> <span class="na">someArgument=</span><span class="s">&quot;hello&quot;</span>
+</span><span class='line'>          <span class="na">returnvariable=</span><span class="s">&quot;result&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice the underscore? That means you should probably not be using this.</p>
+
+<p>Anyway, while researching this I also figured out the cfscript syntax to do the same thing.</p>
+
+<figure class='code'><figcaption><span>cfinvoke where endpoint != service url as cfscript</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">service</span> <span class="o">=</span> <span class="nx">createObject</span><span class="p">(</span><span class="s2">&quot;webservice&quot;</span><span class="p">,</span>
+</span><span class='line'>                       <span class="s2">&quot;http://www.riastar.net/service/?wsdl&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">service</span><span class="p">.</span><span class="nx">_setProperty</span><span class="p">(</span><span class="s2">&quot;javax.xml.rpc.service.endpoint.address&quot;</span><span class="p">,</span>
+</span><span class='line'>                     <span class="s2">&quot;http://www.riastar.net/service&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">result</span> <span class="o">=</span> <span class="nx">service</span><span class="p">.</span><span class="nx">remoteMethodName</span><span class="p">(</span><span class="nx">someArgument</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can also find this snippet on <a href="https://gist.github.com/RIAstar/1164657">Gist</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/04/28/riastar-children-new-lena/">RIAstar.children = [New Lena()];</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-28T00:00:00+02:00" pubdate data-updated="true">Apr 28<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>My five-week old daughter is lying next to me on the couch and is telling me that I ought to show the interwebs the
+beautiful birth card I made to announce her arrival in this world. Or at least, that’s what I gather from her babbling.
+So without further ado:</p>
+
+<p><img class="center" src="/images/posts/2011/lena-birthcard.jpg" title="Presentation Lena's birthcard" ></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/03/15/pixelate-filter-with-pixel-bender/">Pixelate Filter With Pixel Bender</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-03-15T00:00:00+01:00" pubdate data-updated="true">Mar 15<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="left" src="/images/posts/2009/pixelate-filter.jpg" title="Pixelate filter" >
+Well, I finally found some time to dive into the Pixel Bender pool and start playing around with that new technology
+that came from Adobe-land. And this is what I came up with for my very first attempt: nothing too fancy, just the Pixel
+Bender version of the well known ”Pixelate” PhotoShop filter. Give it a whirl by adjusting the pixel size with the
+slider. Flash Player 10 required of course.</p>
+
+<hr />
+
+<p>Here&#8217;s a working example. Just play around with the <code>Pixel size</code> slider.</p>
+
+<div id="flashcontent-wrapper" class="center flash-video" style="width: 498px; height: 402px">
+<div id="flashcontent" style="width: 100%; height:100%"><p>Please install latest <a href='http://www.adobe.com/go/getflashplayer'>Flash Player Plugin</a>.</p></div>
+</div>
+
+
+<script type="text/javascript">
+//  <![CDATA[
+var flashvars = {};
+var params = {};
+var attributes = {};
+swfobject.embedSWF(
+'/labs/pixel_bender/PixelBender.swf',
+'flashcontent',
+'100%',
+'100%',
+'10.0',
+null,
+flashvars,
+params,
+attributes,
+null
+);
+// ]]>
+</script>
+
+
+<p>You can <a href="/labs/pixel_bender/srcview/index.html">check the ActionScript source code</a> and here comes the Pixel Bender kernel source:</p>
+
+<figure class='code'><figcaption><span>Pixelate kernel</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="o">&lt;</span><span class="n">languageVersion</span> <span class="o">:</span> <span class="mf">1.0</span><span class="p">;</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">kernel</span> <span class="n">Pixelate</span>
+</span><span class='line'><span class="o">&lt;</span>
+</span><span class='line'>   <span class="n">namespace</span> <span class="o">:</span> <span class="s">&quot;net.riastar.shader&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">vendor</span> <span class="o">:</span> <span class="s">&quot;RIAstar&quot;</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">version</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">description</span> <span class="o">:</span> <span class="s">&quot;pixelates an image&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="o">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="n">input</span> <span class="n">image4</span> <span class="n">src</span><span class="p">;</span>
+</span><span class='line'>   <span class="n">output</span> <span class="n">pixel4</span> <span class="n">dst</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">parameter</span> <span class="kt">float</span> <span class="n">size</span>
+</span><span class='line'>   <span class="o">&lt;</span>
+</span><span class='line'>      <span class="nl">minValue:</span> <span class="mf">1.0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nl">maxValue:</span> <span class="mf">20.0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nl">defaultValue:</span> <span class="mf">4.0</span><span class="p">;</span>
+</span><span class='line'>   <span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="kt">void</span> <span class="nf">evaluatePixel</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">float2</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">outCoord</span><span class="p">();</span>
+</span><span class='line'>      <span class="kt">float</span> <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">dst</span> <span class="o">=</span> <span class="n">sampleNearest</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">float2</span><span class="p">(</span>
+</span><span class='line'>         <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">center</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">center</span>
+</span><span class='line'>      <span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//make sure not to sample outside the borders</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">dst</span><span class="p">.</span><span class="n">a</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+</span><span class='line'>         <span class="n">dst</span> <span class="o">=</span> <span class="n">sampleNearest</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">float2</span><span class="p">(</span>
+</span><span class='line'>            <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">mod</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">));</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I had quite a hard time getting it to work in ActionScript, apparently because I installed the Flex 3.3 SDK just a week
+ago. Just putting a declaration of a <code>flash.display.Shader</code> class in my code, was sufficient to stop all code from
+executing, although the VM did not crash. I also got no error message whatsoever.</p>
+
+<p>So after a whole hour of trying everything I could think of, I told the compiler to use the old 3.2 SDK and tadaa:
+working like a charm. Is it a bug in 3.3 (which was meant to be a bugfix release in the first place) or did I do
+something wrong?</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/03/28/gradlefx-multiple-configurations/">GradleFx: multiple configurations</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/11/octopress-and-pagodabox/">Moving to Octopress and Pagodabox</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/08/gradlefx-committer/">GradleFx committer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/20/copying-instance-properties/">RIA utilities: copying instance properties</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/29/gigs-easier-actionscript-event-handling/">Gigs - Easier ActionScript event handling</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/RIAstar">@RIAstar</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'RIAstar',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("demaxx", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/demaxx" class="twitter-follow-button" data-show-count="false">Follow @demaxx</a>
+  
+</section>
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/116886999026735985406?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - RIAstar -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'riastar';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
